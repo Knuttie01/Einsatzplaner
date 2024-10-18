@@ -1,8 +1,9 @@
 const canvas = document.getElementById('mapCanvas');
 const ctx = canvas.getContext('2d');
 
+// Karte laden
 const mapImage = new Image();
-mapImage.src = 'https://github.com/Knuttie01/Einsatzplaner/blob/main/images/Download.jpg';
+mapImage.src = 'https://raw.githubusercontent.com/Knuttie01/Einsatzplaner/main/images/Download.jpg'; // Korrekt
 
 let mapWidth = 7800;  // Breite der Karte
 let mapHeight = 7800; // Höhe der Karte
