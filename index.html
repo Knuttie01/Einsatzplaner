@@ -1,1 +1,39 @@
-<h1>Hsllo<h1>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feuerwehr Einsatzplaner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="map-container">
+        <canvas id="mapCanvas"></canvas>
+    </div>
+
+    <!-- Menü-Button -->
+    <button id="menuButton" class="menu-toggle">☰</button>
+
+    <!-- Menü -->
+    <div id="menu" class="hidden">
+        <div id="closeMenu" class="menu-toggle">☰</div>
+        <div class="menu-item">
+            <h3>Vorlagen</h3>
+            <!-- Vorlagen können hier hinzugefügt werden -->
+        </div>
+        <div class="menu-item">
+            <h3>Zeichnen</h3>
+            <button class="draw-option" data-color="red">Rot</button>
+            <button class="draw-option" data-color="yellow">Gelb</button>
+            <button class="draw-option" data-color="black">Schwarz</button>
+            <button class="draw-option" data-color="blue">Blau</button>
+        </div>
+        <div class="menu-item">
+            <h3>Radierer</h3>
+            <button id="eraser">Radierer</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
