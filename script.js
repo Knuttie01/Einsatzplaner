@@ -1,6 +1,8 @@
 // Canvas Setup
 const canvas = document.getElementById('mapCanvas');
 const ctx = canvas.getContext('2d');
+
+// Größe des Canvas anpassen
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -8,11 +10,7 @@ canvas.height = window.innerHeight;
 const mapImage = new Image();
 mapImage.src = './Download.jpeg';
 mapImage.onload = function () {
-    // Skaliere die Karte proportional zum Canvas
-    let scaleFactor = Math.min(canvas.width / mapImage.width, canvas.height / mapImage.height);
-    let scaledWidth = mapImage.width * scaleFactor;
-    let scaledHeight = mapImage.height * scaleFactor;
-    ctx.drawImage(mapImage, offsetX, offsetY, scaledWidth, scaledHeight);
+    ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
 };
 
 let isDrawing = false;
@@ -20,12 +18,14 @@ let color = 'red';  // Standard-Zeichenfarbe
 let isDragging = false;
 let startX, startY;
 let offsetX = 0, offsetY = 0;
+let drawMode = false; // Zeichenmodus initial deaktiviert
 let currentTool = 'move';  // Standardmodus
 
 // Menü-Button Toggle
 const menuButton = document.getElementById('menuButton');
 const menu = document.getElementById('menu');
 const closeMenuButton = document.getElementById('closeMenu');
+const toggleDrawModeButton = document.getElementById('toggleDrawMode');
 
 menuButton.addEventListener('click', () => {
     menu.style.display = 'block'; // Menü anzeigen
@@ -39,17 +39,23 @@ closeMenuButton.addEventListener('click', () => {
 document.querySelectorAll('.draw-option').forEach(btn => {
     btn.addEventListener('click', (e) => {
         color = e.target.getAttribute('data-color');
-        currentTool = 'draw';
     });
+});
+
+// Zeichenmodus-Toggle
+toggleDrawModeButton.addEventListener('click', () => {
+    drawMode = !drawMode;  // Zeichenmodus umschalten
+    toggleDrawModeButton.textContent = drawMode ? 'Zeichnen: EIN' : 'Zeichnen: AUS';
+    currentTool = drawMode ? 'draw' : 'move'; // Zwischen Zeichnen und Bewegen wechseln
 });
 
 // Radierer
 document.getElementById('eraser').addEventListener('click', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(mapImage, offsetX, offsetY, canvas.width, canvas.height);  // Karte neu zeichnen
+    ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);  // Karte neu zeichnen
 });
 
-// Karte bewegen – Desktop
+// Karte bewegen oder zeichnen – Desktop
 canvas.addEventListener('mousedown', (e) => {
     if (currentTool === 'move') {
         isDragging = true;
@@ -82,9 +88,9 @@ canvas.addEventListener('mouseup', () => {
     ctx.closePath();
 });
 
-// Karte bewegen – Touch-Unterstützung
+// Touch-Unterstützung für mobile Geräte
 canvas.addEventListener('touchstart', (e) => {
-    e.preventDefault(); // Verhindert das Scrollen auf Touch-Geräten
+    e.preventDefault();
     if (currentTool === 'move') {
         isDragging = true;
         let touch = e.touches[0];
@@ -101,7 +107,7 @@ canvas.addEventListener('touchstart', (e) => {
 });
 
 canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault(); // Verhindert das Scrollen auf Touch-Geräten
+    e.preventDefault();
     if (isDragging) {
         let touch = e.touches[0];
         offsetX = touch.pageX - startX;
