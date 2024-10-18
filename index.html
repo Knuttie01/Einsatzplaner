@@ -1,74 +1,33 @@
-/* Grundlayout */
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;  /* Verhindert das Scrollen der Seite */
-}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feuerwehr Einsatzplaner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="map-container">
+        <canvas id="mapCanvas"></canvas>
+    </div>
 
-#map-container {
-    width: 100vw;  /* Nimmt die gesamte Breite des Fensters ein */
-    height: 100vh;  /* Nimmt die gesamte Höhe des Fensters ein */
-    position: relative;
-    overflow: hidden;  /* Überschüsse werden ausgeblendet */
-}
+    <button id="menuButton">☰ Menü</button>
 
-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: block;
-    /* Die Karte wird skaliert, um das Seitenverhältnis zu wahren */
-    width: 100%;
-    height: auto;
-    cursor: grab;
-}
+    <div id="menu">
+        <button id="closeMenu">✖</button>
+        <div class="menu-item">
+            <h3>Vorlagen</h3>
+            <button class="draw-option" data-color="red">Rot</button>
+            <button class="draw-option" data-color="yellow">Gelb</button>
+            <button class="draw-option" data-color="black">Schwarz</button>
+            <button class="draw-option" data-color="blue">Blau</button>
+        </div>
+        <div class="menu-item">
+            <h3>Radierer</h3>
+            <button id="eraser">Alles Löschen</button>
+        </div>
+    </div>
 
-/* Menü Styling über der Karte */
-#menuButton {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 10px;
-    font-size: 24px;
-    background-color: #333;
-    color: white;
-    border: none;
-    cursor: pointer;
-    z-index: 10;  /* Stellt sicher, dass das Menü über der Karte liegt */
-}
-
-#menu {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 200px;
-    background-color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    padding: 20px;
-    display: none;  /* Standardmäßig versteckt */
-    z-index: 10;  /* Stellt sicher, dass das Menü über der Karte liegt */
-}
-
-.menu-item {
-    margin-bottom: 20px;
-}
-
-.menu-toggle {
-    cursor: pointer;
-    background-color: #333;
-    color: white;
-    border: none;
-    padding: 10px;
-    font-size: 18px;
-}
-
-.draw-option {
-    margin-right: 5px;
-    padding: 5px;
-}
-
-#eraser {
-    padding: 5px;
-}
+    <script src="script.js"></script>
+</body>
+</html>
