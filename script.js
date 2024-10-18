@@ -55,37 +55,6 @@ eraserButton.addEventListener('click', () => {
     drawMap();  // Karte und Canvas neu zeichnen
 });
 
-// Mousedown-Ereignis
-canvas.addEventListener('mousedown', (e) => {
-    if (currentTool === 'move') {
-        // Bewegung starten
-        isPanning = true;
-        startX = e.clientX - offsetX;
-        startY = e.clientY - offsetY;
-    } else if (currentTool === 'draw') {
-        // Zeichnen starten
-        isDrawing = true;
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo((e.clientX - offsetX) / scale, (e.clientY - offsetY) / scale);
-    }
-});
-
-// Mousemove-Ereignis
-canvas.addEventListener('mousemove', (e) => {
-    if (isPanning) {
-        // Bewegung umsetzen
-        offsetX = e.clientX - startX;
-        offsetY = e.clientY - startY;
-        drawMap();  // Karte neu zeichnen
-    } else if (isDrawing) {
-        // Zeichnen umsetzen
-        ctx.lineTo((e.clientX - offsetX) / scale, (e.clientY - offsetY) / scale);
-        ctx.stroke();
-    }
-});
-
 // Mouseup-Ereignis
 canvas.addEventListener('mouseup', () => {
     if (isPanning) {
