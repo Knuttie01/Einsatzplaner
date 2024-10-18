@@ -19,8 +19,9 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100%; /* Volle Breite */
+    height: 100%; /* Volle Höhe */
+    object-fit: contain; /* Behält das Seitenverhältnis der Karte bei */
 }
 
 /* Menü-Button, um das Menü ein- und auszublenden */
@@ -43,6 +44,9 @@ body {
     top: 60px;
     right: 10px;
     z-index: 10; /* Damit das Menü über der Karte liegt */
+    background-color: rgba(255, 255, 255, 0.9); /* Halbtransparent für bessere Sichtbarkeit */
+    padding: 10px;
+    border-radius: 5px;
 }
 
 /* Menü schließen Button */
