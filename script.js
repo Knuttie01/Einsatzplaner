@@ -68,7 +68,7 @@ canvas.addEventListener('mousemove', (e) => {
         // Bewegung umsetzen
         offsetX = e.clientX - startX;
         offsetY = e.clientY - startY;
-        drawMap();
+        drawMap();  // Karte neu zeichnen
     } else if (isDrawing) {
         // Zeichnen umsetzen
         ctx.lineTo((e.clientX - offsetX) / scale, (e.clientY - offsetY) / scale);
@@ -78,11 +78,19 @@ canvas.addEventListener('mousemove', (e) => {
 
 // Mouseup-Ereignis
 canvas.addEventListener('mouseup', () => {
-    isPanning = false;
+    if (isPanning) {
+        isPanning = false;
+    }
     if (isDrawing) {
         isDrawing = false;
         ctx.closePath();
-        drawings.push(ctx.getImageData(0, 0, canvas.width, canvas.height));  // Zeichnung speichern
+        // Zeichnung speichern
+        const newDrawing = {
+            color: ctx.strokeStyle,
+            lineWidth: ctx.lineWidth,
+            path: ctx.getImageData(0, 0, canvas.width, canvas.height)
+        };
+        drawings.push(newDrawing);
     }
 });
 
@@ -132,7 +140,12 @@ canvas.addEventListener('touchend', () => {
     if (isDrawing) {
         isDrawing = false;
         ctx.closePath();
-        drawings.push(ctx.getImageData(0, 0, canvas.width, canvas.height));  // Zeichnung speichern
+        const newDrawing = {
+            color: ctx.strokeStyle,
+            lineWidth: ctx.lineWidth,
+            path: ctx.getImageData(0, 0, canvas.width, canvas.height)
+        };
+        drawings.push(newDrawing);
     }
 });
 
@@ -145,9 +158,10 @@ function drawMap() {
     ctx.scale(scale, scale);
     ctx.drawImage(mapImage, offsetX / scale, offsetY / scale, canvas.width, canvas.height);
     ctx.restore();
+
     // Gespeicherte Zeichnungen wiederherstellen
     drawings.forEach(drawing => {
-        ctx.putImageData(drawing, 0, 0);
+        ctx.putImageData(drawing.path, 0, 0);
     });
 }
 
