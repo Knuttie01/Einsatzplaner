@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 
 // Karte laden
 const mapImage = new Image();
-mapImage.src = './Download.jpeg';  // Das 7800x7800 große Bild
+mapImage.src = './map.png';  // Das 7800x7800 große Bild
 
 let mapWidth = 7800;  // Breite der Karte
 let mapHeight = 7800; // Höhe der Karte
