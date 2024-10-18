@@ -9,8 +9,8 @@ body {
 /* Container für die Karte */
 #map-container {
     position: relative;
-    width: 100vw;
-    height: 200vh;
+    width: 50vw;
+    height: 100vh;
     overflow: hidden;
 }
 
@@ -40,7 +40,7 @@ body {
 /* Das Menü selbst */
 #menu {
     position: absolute;
-    top: 50px;
+    top: 60px;
     right: 10px;
     z-index: 10; /* Damit das Menü über der Karte liegt */
 }
