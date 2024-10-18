@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 
 // Karte laden
 const mapImage = new Image();
-mapImage.src = './Download.jpeg';
+mapImage.src = './map.png';
 
 let offsetX = 0, offsetY = 0;
 let scale = 1;
