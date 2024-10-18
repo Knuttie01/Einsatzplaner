@@ -1,88 +1,74 @@
-// Canvas Setup
-const canvas = document.getElementById('mapCanvas');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+/* Grundlayout */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;  /* Verhindert das Scrollen der Seite */
+}
 
-// Laden der Karte (hier als Bild)
-const mapImage = new Image();
-mapImage.src = 'https://example.com/path-to-your-map-image.jpg';  // Füge den Pfad zu deinem Kartenbild hier ein
-mapImage.onload = function () {
-    ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
-};
+#map-container {
+    width: 100vw;  /* Nimmt die gesamte Breite des Fensters ein */
+    height: 100vh;  /* Nimmt die gesamte Höhe des Fensters ein */
+    position: relative;
+    overflow: hidden;  /* Überschüsse werden ausgeblendet */
+}
 
-let isDrawing = false;
-let color = 'red';  // Standard-Zeichenfarbe
-let isDragging = false;
-let startX, startY;
-let offsetX = 0, offsetY = 0;
-let currentTool = 'move';  // Standardmodus
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    object-fit: contain; /* Bewahrt das Seitenverhältnis des Bildes */
+}
 
-// Menü-Button Toggle
-const menuButton = document.getElementById('menuButton');
-const menu = document.getElementById('menu');
-const closeMenuButton = document.getElementById('closeMenu');
+/* Menü Styling über der Karte */
+#menuButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    font-size: 24px;
+    background-color: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+    z-index: 10;  /* Stellt sicher, dass das Menü über der Karte liegt */
+}
 
-menuButton.addEventListener('click', () => {
-    menu.style.display = 'block'; // Menü anzeigen
-});
+#menu {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    width: 200px;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    display: none;  /* Standardmäßig versteckt */
+    z-index: 10;  /* Stellt sicher, dass das Menü über der Karte liegt */
+}
 
-closeMenuButton.addEventListener('click', () => {
-    menu.style.display = 'none';  // Menü ausblenden
-});
+.menu-item {
+    margin-bottom: 20px;
+}
 
-// Farbwechsel für den Zeichnen-Modus
-document.querySelectorAll('.draw-option').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        color = e.target.getAttribute('data-color');
-        currentTool = 'draw';
-    });
-});
+#closeMenu {
+    background-color: #ff3333;
+    color: white;
+    border: none;
+    padding: 5px;
+    font-size: 18px;
+    cursor: pointer;
+}
 
-// Radierer
-document.getElementById('eraser').addEventListener('click', () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);  // Karte neu zeichnen
-});
+.draw-option {
+    margin-right: 5px;
+    padding: 5px;
+}
 
-// Karte bewegen
-canvas.addEventListener('mousedown', (e) => {
-    if (currentTool === 'move') {
-        isDragging = true;
-        startX = e.offsetX - offsetX;
-        startY = e.offsetY - offsetY;
-    } else if (currentTool === 'draw') {
-        isDrawing = true;
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(e.offsetX, e.offsetY);
-    }
-});
-
-canvas.addEventListener('mousemove', (e) => {
-    if (isDragging) {
-        offsetX = e.offsetX - startX;
-        offsetY = e.offsetY - startY;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(mapImage, offsetX, offsetY, canvas.width, canvas.height);
-    } else if (isDrawing) {
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.stroke();
-    }
-});
-
-canvas.addEventListener('mouseup', () => {
-    isDragging = false;
-    isDrawing = false;
-    ctx.closePath();
-});
-
-// Zoom-Funktion
-canvas.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const zoomFactor = e.deltaY * -0.001;
-    canvas.width += canvas.width * zoomFactor;
-    canvas.height += canvas.height * zoomFactor;
-    ctx.drawImage(mapImage, offsetX, offsetY, canvas.width, canvas.height);
-});
+#eraser {
+    padding: 5px;
+}
