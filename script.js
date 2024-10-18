@@ -4,6 +4,13 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Laden der Karte
+const mapImage = new Image();
+mapImage.src = 'Download.jpeg';  // Füge hier den richtigen Pfad für die Datei "Download.jpeg" ein
+mapImage.onload = function () {
+    ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
+};
+
 let isDrawing = false;
 let color = 'red';  // Standard-Zeichenfarbe
 let isDragging = false;
@@ -12,13 +19,24 @@ let offsetX = 0, offsetY = 0;
 let currentTool = 'move';  // Standardmodus
 
 // Menü-Button Toggle
-document.getElementById('menuButton').addEventListener('click', () => {
-    document.getElementById('menu').classList.toggle('hidden');
+const menuButton = document.getElementById('menuButton');
+const menu = document.getElementById('menu');
+const closeMenuButton = document.getElementById('closeMenu');
+
+// Öffnen des Menüs per Klick oder Touch
+menuButton.addEventListener('click', () => {
+    menu.style.display = 'block'; // Menü anzeigen
+});
+menuButton.addEventListener('touchstart', () => {
+    menu.style.display = 'block'; // Menü anzeigen für Touch-Geräte
 });
 
-// Menü schließen
-document.getElementById('closeMenu').addEventListener('click', () => {
-    document.getElementById('menu').classList.add('hidden');
+// Schließen des Menüs per Klick oder Touch
+closeMenuButton.addEventListener('click', () => {
+    menu.style.display = 'none';  // Menü ausblenden
+});
+closeMenuButton.addEventListener('touchstart', () => {
+    menu.style.display = 'none';  // Menü ausblenden für Touch-Geräte
 });
 
 // Farbwechsel für den Zeichnen-Modus
@@ -32,6 +50,7 @@ document.querySelectorAll('.draw-option').forEach(btn => {
 // Radierer
 document.getElementById('eraser').addEventListener('click', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);  // Karte neu zeichnen
 });
 
 // Karte bewegen
@@ -54,7 +73,7 @@ canvas.addEventListener('mousemove', (e) => {
         offsetX = e.offsetX - startX;
         offsetY = e.offsetY - startY;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // Redraw existing map and objects (if necessary)
+        ctx.drawImage(mapImage, offsetX, offsetY, canvas.width, canvas.height);
     } else if (isDrawing) {
         ctx.lineTo(e.offsetX, e.offsetY);
         ctx.stroke();
@@ -73,4 +92,5 @@ canvas.addEventListener('wheel', (e) => {
     const zoomFactor = e.deltaY * -0.001;
     canvas.width += canvas.width * zoomFactor;
     canvas.height += canvas.height * zoomFactor;
+    ctx.drawImage(mapImage, offsetX, offsetY, canvas.width, canvas.height);
 });
