@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 
 // Karte laden
 const mapImage = new Image();
-mapImage.src = 'https://github.com/Knuttie01/Einsatzplaner/blob/main/images/Download.jpg';  // Das 7800x7800 große Bild
+mapImage.src = './images/Download.jpg';  // Passe diesen Pfad an
 
 let mapWidth = 7800;  // Breite der Karte
 let mapHeight = 7800; // Höhe der Karte
