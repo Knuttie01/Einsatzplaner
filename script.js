@@ -1,157 +1,135 @@
-// Canvas Setup
+// Canvas und Kontexte initialisieren
 const canvas = document.getElementById('mapCanvas');
 const ctx = canvas.getContext('2d');
 
-// Größe des Canvas anpassen
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-// Laden der Karte
+// Karte laden
 const mapImage = new Image();
 mapImage.src = './Download.jpeg';
-mapImage.onload = function () {
-    drawMap();  // Karte initial zeichnen
-};
 
-// Variablen zur Steuerung
-let isDrawing = false;
-let color = 'red';  // Standard-Zeichenfarbe
-let isDragging = false;
-let startX, startY;
+// Kartenparameter
 let offsetX = 0, offsetY = 0;
-let drawMode = false; // Zeichenmodus initial deaktiviert
-let currentTool = 'move';  // Standardmodus ist Bewegung
-let scale = 1;  // Initiale Zoom-Skalierung
-let drawings = [];  // Zeichnungen speichern
+let scale = 1;
+let isPanning = false, isDrawing = false;
+let startX, startY;
+let currentTool = 'move';  // Standardwerkzeug ist Bewegung
+let drawings = [];
+let color = 'red';
 
-// Menü-Button Toggle
+// Zeichenwerkzeuge
 const menuButton = document.getElementById('menuButton');
-const menu = document.getElementById('menu');
-const closeMenuButton = document.getElementById('closeMenu');
 const toggleDrawModeButton = document.getElementById('toggleDrawMode');
 
+// Menü sichtbar machen/verstecken
 menuButton.addEventListener('click', () => {
-    menu.style.display = 'block'; // Menü anzeigen
+    const menu = document.getElementById('menu');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
 });
 
-closeMenuButton.addEventListener('click', () => {
-    menu.style.display = 'none';  // Menü ausblenden
+// Zeichenmodus umschalten
+toggleDrawModeButton.addEventListener('click', () => {
+    isDrawing = !isDrawing;
+    currentTool = isDrawing ? 'draw' : 'move';
+    toggleDrawModeButton.textContent = isDrawing ? 'Zeichenmodus: EIN' : 'Zeichenmodus: AUS';
 });
 
-// Farbwechsel für den Zeichnen-Modus
+// Farbwechsel
 document.querySelectorAll('.draw-option').forEach(btn => {
     btn.addEventListener('click', (e) => {
         color = e.target.getAttribute('data-color');
     });
 });
 
-// Zeichenmodus-Toggle
-toggleDrawModeButton.addEventListener('click', () => {
-    drawMode = !drawMode;  // Zeichenmodus umschalten
-    toggleDrawModeButton.textContent = drawMode ? 'Zeichnen: EIN' : 'Zeichnen: AUS';
-    currentTool = drawMode ? 'draw' : 'move'; // Zwischen Zeichnen und Bewegen wechseln
-    if (drawMode) {
-        canvas.style.cursor = "crosshair";  // Fadenkreuz-Cursor
-    } else {
-        canvas.style.cursor = "grab";  // Hand-Cursor
-    }
-});
-
 // Radierer
 document.getElementById('eraser').addEventListener('click', () => {
-    drawings = [];  // Alle Zeichnungen löschen
-    drawMap();  // Karte neu zeichnen
+    drawings = [];
+    drawMap();
 });
 
-// Karte bewegen oder zeichnen – Desktop
+// Mousedown Ereignis
 canvas.addEventListener('mousedown', (e) => {
     if (currentTool === 'move') {
-        isDragging = true;
-        canvas.style.cursor = "grabbing";  // Feedback für Bewegung
-        startX = e.offsetX - offsetX;
-        startY = e.offsetY - offsetY;
+        isPanning = true;
+        startX = e.clientX - offsetX;
+        startY = e.clientY - offsetY;
     } else if (currentTool === 'draw') {
-        isDrawing = true;
-        ctx.strokeStyle = color;  // Farbe anwenden
+        ctx.strokeStyle = color;
         ctx.lineWidth = 3;
+        isDrawing = true;
         ctx.beginPath();
-        ctx.moveTo((e.offsetX - offsetX) / scale, (e.offsetY - offsetY) / scale);
+        ctx.moveTo((e.clientX - offsetX) / scale, (e.clientY - offsetY) / scale);
     }
 });
 
+// Mousemove Ereignis
 canvas.addEventListener('mousemove', (e) => {
-    if (isDragging && currentTool === 'move') {
-        offsetX = e.offsetX - startX;
-        offsetY = e.offsetY - startY;
-        drawMap();  // Karte neu zeichnen bei Bewegung
-    } else if (isDrawing && currentTool === 'draw') {
-        ctx.lineTo((e.offsetX - offsetX) / scale, (e.offsetY - offsetY) / scale);
+    if (isPanning) {
+        offsetX = e.clientX - startX;
+        offsetY = e.clientY - startY;
+        drawMap();
+    } else if (isDrawing) {
+        ctx.lineTo((e.clientX - offsetX) / scale, (e.clientY - offsetY) / scale);
         ctx.stroke();
     }
 });
 
+// Mouseup Ereignis
 canvas.addEventListener('mouseup', () => {
-    isDragging = false;
-    if (isDrawing && currentTool === 'draw') {
+    isPanning = false;
+    if (isDrawing) {
+        drawings.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
         isDrawing = false;
         ctx.closePath();
-        drawings.push({ color, path: ctx.getImageData(0, 0, canvas.width, canvas.height) });
-    }
-    if (currentTool === 'move') {
-        canvas.style.cursor = "grab";  // Cursor zurücksetzen
     }
 });
 
-// Touch-Unterstützung für mobile Geräte
+// Zoom mit dem Mausrad
+canvas.addEventListener('wheel', (e) => {
+    const zoomFactor = e.deltaY * -0.01;
+    scale += zoomFactor;
+    scale = Math.min(Math.max(.5, scale), 3); // Begrenzen des Zooms
+    drawMap();
+});
+
+// Touch-Unterstützung (zum Bewegen und Zeichnen)
 canvas.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    let touch = e.touches[0];
+    const touch = e.touches[0];
     if (currentTool === 'move') {
-        isDragging = true;
-        startX = touch.pageX - offsetX;
-        startY = touch.pageY - offsetY;
+        isPanning = true;
+        startX = touch.clientX - offsetX;
+        startY = touch.clientY - offsetY;
     } else if (currentTool === 'draw') {
-        isDrawing = true;
         ctx.strokeStyle = color;
         ctx.lineWidth = 3;
+        isDrawing = true;
         ctx.beginPath();
-        ctx.moveTo((touch.pageX - offsetX) / scale, (touch.pageY - offsetY) / scale);
+        ctx.moveTo((touch.clientX - offsetX) / scale, (touch.clientY - offsetY) / scale);
     }
 });
 
 canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
-    let touch = e.touches[0];
-    if (isDragging && currentTool === 'move') {
-        offsetX = touch.pageX - startX;
-        offsetY = touch.pageY - startY;
+    const touch = e.touches[0];
+    if (isPanning) {
+        offsetX = touch.clientX - startX;
+        offsetY = touch.clientY - startY;
         drawMap();
-    } else if (isDrawing && currentTool === 'draw') {
-        ctx.lineTo((touch.pageX - offsetX) / scale, (touch.pageY - offsetY) / scale);
+    } else if (isDrawing) {
+        ctx.lineTo((touch.clientX - offsetX) / scale, (touch.clientY - offsetY) / scale);
         ctx.stroke();
     }
 });
 
 canvas.addEventListener('touchend', () => {
-    isDragging = false;
-    if (isDrawing && currentTool === 'draw') {
+    isPanning = false;
+    if (isDrawing) {
+        drawings.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
         isDrawing = false;
         ctx.closePath();
-        drawings.push({ color, path: ctx.getImageData(0, 0, canvas.width, canvas.height) });
     }
 });
 
-// Zoom-Funktion
-canvas.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const zoomFactor = e.deltaY * -0.01;
-    scale += zoomFactor;
-    if (scale < 0.5) scale = 0.5;
-    if (scale > 3) scale = 3;
-    drawMap();  // Karte neu zeichnen mit Zoom
-});
-
-// Zeichnen und Karte synchronisieren
+// Zeichnungen und Karte rendern
 function drawMap() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
@@ -159,8 +137,7 @@ function drawMap() {
     ctx.drawImage(mapImage, offsetX / scale, offsetY / scale, canvas.width, canvas.height);
     ctx.restore();
 
-    // Zeichnungen wiederherstellen
     drawings.forEach(drawing => {
-        ctx.putImageData(drawing.path, 0, 0);
+        ctx.putImageData(drawing, 0, 0);
     });
 }
