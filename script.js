@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 
 // Karte laden
 const mapImage = new Image();
-mapImage.src = './images/Download.jpg';  // Passe diesen Pfad an
+mapImage.src = 'https://github.com/Knuttie01/Einsatzplaner/blob/main/images/Download.jpg';  // Das 7800x7800 große Bild
 
 let mapWidth = 7800;  // Breite der Karte
 let mapHeight = 7800; // Höhe der Karte
@@ -55,6 +55,50 @@ eraserButton.addEventListener('click', () => {
     drawMap();  // Karte und Canvas neu zeichnen
 });
 
+// Hilfsfunktion, um die Mausposition zu berechnen
+function getMousePosition(e) {
+    const rect = canvas.getBoundingClientRect(); // Die aktuelle Größe und Position des Canvas
+    return {
+        x: (e.clientX - rect.left) / scale, // Mausposition relativ zur Canvas und unter Berücksichtigung der Skalierung
+        y: (e.clientY - rect.top) / scale // Mausposition relativ zur Canvas und unter Berücksichtigung der Skalierung
+    };
+}
+
+// Mousedown-Ereignis
+canvas.addEventListener('mousedown', (e) => {
+    const { x, y } = getMousePosition(e); // Mausposition erhalten
+
+    if (currentTool === 'move') {
+        // Bewegung starten
+        isPanning = true;
+        startX = e.clientX - offsetX;
+        startY = e.clientY - offsetY;
+    } else if (currentTool === 'draw') {
+        // Zeichnen starten
+        isDrawing = true;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x - offsetX / scale, y - offsetY / scale); // Korrigierte Position
+    }
+});
+
+// Mousemove-Ereignis
+canvas.addEventListener('mousemove', (e) => {
+    const { x, y } = getMousePosition(e); // Mausposition erhalten
+
+    if (isPanning) {
+        // Bewegung umsetzen
+        offsetX = e.clientX - startX;
+        offsetY = e.clientY - startY;
+        drawMap();  // Karte neu zeichnen
+    } else if (isDrawing) {
+        // Zeichnen umsetzen
+        ctx.lineTo(x - offsetX / scale, y - offsetY / scale); // Korrigierte Position
+        ctx.stroke();
+    }
+});
+
 // Mouseup-Ereignis
 canvas.addEventListener('mouseup', () => {
     if (isPanning) {
@@ -78,7 +122,7 @@ canvas.addEventListener('wheel', (e) => {
     e.preventDefault();  // Standard-Zoom-Verhalten verhindern
     const zoomFactor = e.deltaY * -0.01;
     scale += zoomFactor;
-    scale = Math.min(Math.max(0.5, scale), 3);  // Begrenzung des Zooms
+    scale = Math.min(Math.max(0.5, scale), 5);  // Begrenzung des Zooms (maximal 5)
     drawMap();
 });
 
@@ -86,6 +130,7 @@ canvas.addEventListener('wheel', (e) => {
 canvas.addEventListener('touchstart', (e) => {
     e.preventDefault();
     const touch = e.touches[0];
+    const { x, y } = getMousePosition(touch); // Mausposition erhalten
     if (currentTool === 'move') {
         // Bewegung per Touch
         isPanning = true;
@@ -97,19 +142,20 @@ canvas.addEventListener('touchstart', (e) => {
         ctx.strokeStyle = color;
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo((touch.clientX - offsetX) / scale, (touch.clientY - offsetY) / scale);
+        ctx.moveTo(x - offsetX / scale, y - offsetY / scale); // Korrigierte Position
     }
 });
 
 canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
     const touch = e.touches[0];
+    const { x, y } = getMousePosition(touch); // Mausposition erhalten
     if (isPanning) {
         offsetX = touch.clientX - startX;
         offsetY = touch.clientY - startY;
         drawMap();
     } else if (isDrawing) {
-        ctx.lineTo((touch.clientX - offsetX) / scale, (touch.clientY - offsetY) / scale);
+        ctx.lineTo(x - offsetX / scale, y - offsetY / scale); // Korrigierte Position
         ctx.stroke();
     }
 });
@@ -159,12 +205,6 @@ function drawMap() {
 }
 
 // Wenn die Karte geladen ist, das Canvas zeichnen
-mapImage.onload = drawMap;
-
-// Canvas dynamisch an Fenstergröße anpassen
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();  // Erste Initialisierung
-
 mapImage.onload = function() {
     console.log("Bild erfolgreich geladen.");
     drawMap();  // Bild wurde geladen, also Karte zeichnen
@@ -173,3 +213,7 @@ mapImage.onload = function() {
 mapImage.onerror = function() {
     console.error("Das Bild konnte nicht geladen werden. Überprüfe den Pfad und die Verfügbarkeit.");
 };
+
+// Canvas dynamisch an Fenstergröße anpassen
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();  // Erste Initialisierung
