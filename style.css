@@ -10,7 +10,7 @@ body {
 #map-container {
     position: relative;
     width: 100vw;
-    height: 100vh;
+    height: 200vh;
     overflow: hidden;
 }
 
@@ -20,7 +20,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 200%;
 }
 
 /* Menü-Button, um das Menü ein- und auszublenden */
@@ -40,7 +40,7 @@ body {
 /* Das Menü selbst */
 #menu {
     position: absolute;
-    top: 10px;
+    top: 50px;
     right: 10px;
     z-index: 10; /* Damit das Menü über der Karte liegt */
 }
