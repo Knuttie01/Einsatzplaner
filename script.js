@@ -4,7 +4,10 @@ const ctx = canvas.getContext('2d');
 
 // Karte laden
 const mapImage = new Image();
-mapImage.src = './map.png';
+mapImage.src = './Download.jpeg';  // Das 7800x7800 große Bild
+
+let mapWidth = 7800;  // Breite der Karte
+let mapHeight = 7800; // Höhe der Karte
 
 let offsetX = 0, offsetY = 0;
 let scale = 1;
@@ -18,6 +21,13 @@ let drawings = [];  // Speicherung aller Zeichnungen
 const menuButton = document.getElementById('menuButton');
 const toggleDrawModeButton = document.getElementById('toggleDrawMode');
 const eraserButton = document.getElementById('eraser');
+
+// Dynamische Anpassung der Canvas-Größe an das Fenster
+function resizeCanvas() {
+    canvas.width = window.innerWidth;  // Breite des Fensters
+    canvas.height = window.innerHeight;  // Höhe des Fensters
+    drawMap();  // Karte neu zeichnen
+}
 
 // Menü ein-/ausblenden
 menuButton.addEventListener('click', () => {
@@ -154,9 +164,23 @@ function drawMap() {
     // Hintergrund löschen
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
-    // Karte skalieren und zeichnen
+    
+    // Berechnung des Seitenverhältnisses der Karte
+    const aspectRatio = mapWidth / mapHeight;
+    const canvasRatio = canvas.width / canvas.height;
+    
+    let drawWidth, drawHeight;
+    if (aspectRatio > canvasRatio) {
+        drawWidth = canvas.width;
+        drawHeight = canvas.width / aspectRatio;
+    } else {
+        drawHeight = canvas.height;
+        drawWidth = canvas.height * aspectRatio;
+    }
+
+    // Karte zeichnen
     ctx.scale(scale, scale);
-    ctx.drawImage(mapImage, offsetX / scale, offsetY / scale, canvas.width, canvas.height);
+    ctx.drawImage(mapImage, offsetX / scale, offsetY / scale, drawWidth, drawHeight);
     ctx.restore();
 
     // Gespeicherte Zeichnungen wiederherstellen
@@ -167,3 +191,7 @@ function drawMap() {
 
 // Wenn die Karte geladen ist, das Canvas zeichnen
 mapImage.onload = drawMap;
+
+// Canvas dynamisch an Fenstergröße anpassen
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();  // Erste Initialisierung
