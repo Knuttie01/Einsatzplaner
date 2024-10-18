@@ -48,7 +48,7 @@ document.querySelectorAll('.draw-option').forEach(btn => {
 // Zeichenmodus-Toggle
 toggleDrawModeButton.addEventListener('click', () => {
     drawMode = !drawMode;  // Zeichenmodus umschalten
-    toggleDrawModeButton.textContent = drawMode ? 'Zeichnen: EIN' : 'Zeichnen: AUS';
+    toggleDrawModeButton.textContent = drawMode ? 'Zeichnen: EINs' : 'Zeichnen: AUS';
     currentTool = drawMode ? 'draw' : 'move'; // Zwischen Zeichnen und Bewegen wechseln
     if (drawMode) {
         canvas.style.cursor = "crosshair";  // Fadenkreuz-Cursor
