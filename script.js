@@ -64,34 +64,44 @@ function getMousePosition(e) {
 
 // Mousedown-Ereignis
 canvas.addEventListener('mousedown', (e) => {
-    const { x, y } = getMousePosition(e); // Mausposition erhalten
+    const rect = canvas.getBoundingClientRect(); // Position des Canvas im Fenster
+    const mouseX = (e.clientX - rect.left) / scale; // Mausposition relativ zum Canvas
+    const mouseY = (e.clientY - rect.top) / scale;
 
     if (currentTool === 'move') {
+        // Bewegung starten
         isPanning = true;
-        startX = e.clientX - offsetX;
-        startY = e.clientY - offsetY;
+        startX = mouseX - offsetX;
+        startY = mouseY - offsetY;
     } else if (currentTool === 'draw') {
+        // Zeichnen starten
         isDrawing = true;
         ctx.strokeStyle = color;
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(x - offsetX / scale, y - offsetY / scale);
+        ctx.moveTo(mouseX - offsetX, mouseY - offsetY); // Offset anwenden
     }
 });
 
+// Mousemove-Ereignis
 canvas.addEventListener('mousemove', (e) => {
-    const { x, y } = getMousePosition(e); // Mausposition erhalten
-
     if (isPanning) {
-        offsetX = e.clientX - startX;
-        offsetY = e.clientY - startY;
-        drawMap();
+        const rect = canvas.getBoundingClientRect(); // Position des Canvas im Fenster
+        offsetX = (e.clientX - rect.left) - startX; // Offset aktualisieren
+        offsetY = (e.clientY - rect.top) - startY; 
+        drawMap();  // Karte neu zeichnen
     } else if (isDrawing) {
-        ctx.lineTo(x - offsetX / scale, y - offsetY / scale);
+        const rect = canvas.getBoundingClientRect(); // Position des Canvas im Fenster
+        const mouseX = (e.clientX - rect.left) / scale; // Mausposition relativ zum Canvas
+        const mouseY = (e.clientY - rect.top) / scale;
+
+        // Zeichnen umsetzen
+        ctx.lineTo(mouseX - offsetX, mouseY - offsetY); // Offset anwenden
         ctx.stroke();
     }
 });
 
+// Mouseup-Ereignis
 canvas.addEventListener('mouseup', () => {
     if (isPanning) {
         isPanning = false;
@@ -107,7 +117,6 @@ canvas.addEventListener('mouseup', () => {
         drawings.push(newDrawing);
     }
 });
-
 canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     const zoomFactor = e.deltaY * -0.01;
