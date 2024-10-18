@@ -85,16 +85,18 @@ canvas.addEventListener('mousedown', (e) => {
 
 // Mousemove-Ereignis
 canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect(); // Position des Canvas im Fenster
+    const mouseX = (e.clientX - rect.left) / scale; // Mausposition relativ zum Canvas
+    const mouseY = (e.clientY - rect.top) / scale;
+
     if (isPanning) {
-        const rect = canvas.getBoundingClientRect(); // Position des Canvas im Fenster
-        offsetX = (e.clientX - rect.left) - startX; // Offset aktualisieren
-        offsetY = (e.clientY - rect.top) - startY; 
+        // Bewegung umsetzen
+        offsetX += (mouseX - startX); // Inkrementelle Bewegung
+        offsetY += (mouseY - startY);
+        startX = mouseX; // Position für die nächste Bewegung aktualisieren
+        startY = mouseY; 
         drawMap();  // Karte neu zeichnen
     } else if (isDrawing) {
-        const rect = canvas.getBoundingClientRect(); // Position des Canvas im Fenster
-        const mouseX = (e.clientX - rect.left) / scale; // Mausposition relativ zum Canvas
-        const mouseY = (e.clientY - rect.top) / scale;
-
         // Zeichnen umsetzen
         ctx.lineTo(mouseX - offsetX, mouseY - offsetY); // Offset anwenden
         ctx.stroke();
@@ -117,6 +119,7 @@ canvas.addEventListener('mouseup', () => {
         drawings.push(newDrawing);
     }
 });
+
 canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     const zoomFactor = e.deltaY * -0.01;
