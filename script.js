@@ -195,3 +195,12 @@ mapImage.onload = drawMap;
 // Canvas dynamisch an Fenstergröße anpassen
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();  // Erste Initialisierung
+
+mapImage.onload = function() {
+    console.log("Bild erfolgreich geladen.");
+    drawMap();  // Bild wurde geladen, also Karte zeichnen
+};
+
+mapImage.onerror = function() {
+    console.error("Das Bild konnte nicht geladen werden. Überprüfe den Pfad und die Verfügbarkeit.");
+};
