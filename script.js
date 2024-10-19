@@ -64,37 +64,39 @@ function getMousePosition(e) {
 
 // Mousedown-Ereignis
 canvas.addEventListener('mousedown', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = (e.clientX - rect.left);
+    const rect = canvas.getBoundingClientRect(); // Position des Canvas im Fenster
+    const mouseX = (e.clientX - rect.left); // Mausposition relativ zum Canvas (ohne Skalierung)
     const mouseY = (e.clientY - rect.top);
 
     if (currentTool === 'move') {
-        // Bewegung Starten
+        // Bewegung starten
         isPanning = true;
-        startX = mouseX / scale - offsetX
-        startY = mouseY / scale - offsetY
+        startX = mouseX / scale - offsetX; // Berechnung mit Skalierung
+        startY = mouseY / scale - offsetY;
     } else if (currentTool === 'draw') {
-        // Zeichnen Starten
+        // Zeichnen starten
         isDrawing = true;
         ctx.strokeStyle = color;
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo((mouseX - offsetX * scale) / scale, (mouseY - offsetY * scale) / scale); // Skalierung anwenden
+        ctx.moveTo((mouseX - offsetX * scale) / scale, (mouseY - offsetY * scale) / scale); // Korrekte Berechnung
     }
 });
 
 // Mousemove-Ereignis
 canvas.addEventListener('mousemove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = (e.clientX - rect.left);
+    const rect = canvas.getBoundingClientRect(); // Position des Canvas im Fenster
+    const mouseX = (e.clientX - rect.left); // Mausposition relativ zum Canvas (ohne Skalierung)
     const mouseY = (e.clientY - rect.top);
 
     if (isPanning) {
-        offsetX = (mouseX / scale - startX);
+        // Bewegung umsetzen
+        offsetX = (mouseX / scale - startX); // Position mit Skalierung korrekt berechnen
         offsetY = (mouseY / scale - startY);
-        drawMap();
+        drawMap();  // Karte neu zeichnen
     } else if (isDrawing) {
-        ctx.lineTo((mouseX - offsetX * scale) / scale, (mouseY - offsetY * scale) / scale);
+        // Zeichnen umsetzen
+        ctx.lineTo((mouseX - offsetX * scale) / scale, (mouseY - offsetY * scale) / scale); // Offset und Skalierung korrekt anwenden
         ctx.stroke();
     }
 });
