@@ -64,35 +64,39 @@ function getMousePosition(e) {
 
 // Mousedown-Ereignis
 canvas.addEventListener('mousedown', (e) => {
-    const rect = canvas.getBoundingClientRect(); 
-    const mouseX = (e.clientX - rect.left) / scale; // Position relativ zum Canvas und skaliert
-    const mouseY = (e.clientY - rect.top) / scale;
+    const rect = canvas.getBoundingClientRect(); // Position des Canvas im Fenster
+    const mouseX = (e.clientX - rect.left); // Mausposition relativ zum Canvas (ohne Skalierung)
+    const mouseY = (e.clientY - rect.top);
 
     if (currentTool === 'move') {
+        // Bewegung starten
         isPanning = true;
-        startX = mouseX - offsetX; // Starte Panning mit korrektem Offset und Skalierung
-        startY = mouseY - offsetY;
+        startX = mouseX / scale - offsetX; // Berechnung mit Skalierung
+        startY = mouseY / scale - offsetY;
     } else if (currentTool === 'draw') {
+        // Zeichnen starten
         isDrawing = true;
         ctx.strokeStyle = color;
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(mouseX - offsetX, mouseY - offsetY); // Zeichne korrekt relativ zur Karte
+        ctx.moveTo((mouseX - offsetX * scale) / scale, (mouseY - offsetY * scale) / scale); // Korrekte Berechnung
     }
 });
 
 // Mousemove-Ereignis
 canvas.addEventListener('mousemove', (e) => {
-    const rect = canvas.getBoundingClientRect(); 
-    const mouseX = (e.clientX - rect.left) / scale;
-    const mouseY = (e.clientY - rect.top) / scale;
+    const rect = canvas.getBoundingClientRect(); // Position des Canvas im Fenster
+    const mouseX = (e.clientX - rect.left); // Mausposition relativ zum Canvas (ohne Skalierung)
+    const mouseY = (e.clientY - rect.top);
 
     if (isPanning) {
-        offsetX = mouseX - startX; // Berechne das neue Offset basierend auf Mausbewegung
-        offsetY = mouseY - startY;
+        // Bewegung umsetzen
+        offsetX = (mouseX / scale - startX); // Position mit Skalierung korrekt berechnen
+        offsetY = (mouseY / scale - startY);
         drawMap();  // Karte neu zeichnen
     } else if (isDrawing) {
-        ctx.lineTo(mouseX - offsetX, mouseY - offsetY); // Zeichnen relativ zum Offset
+        // Zeichnen umsetzen
+        ctx.lineTo((mouseX - offsetX * scale) / scale, (mouseY - offsetY * scale) / scale); // Offset und Skalierung korrekt anwenden
         ctx.stroke();
     }
 });
