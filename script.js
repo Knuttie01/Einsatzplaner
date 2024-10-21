@@ -8,7 +8,7 @@ mapImage.src = 'https://raw.githubusercontent.com/Knuttie01/Einsatzplaner/main/i
 let mapWidth = 7800;  // Breite der Karte
 let mapHeight = 7800; // Höhe der Karte
 
-let offsetX = 0, offsetY = 0;
+let offsetX = 2, offsetY = 2;
 let scale = 1;
 let isDrawing = false, isPanning = false;
 let startX, startY;
